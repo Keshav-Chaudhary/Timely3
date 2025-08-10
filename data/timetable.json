@@ -1,0 +1,146 @@
+{
+    "branch": "CSAM",
+    "timetable": {
+        "Monday": [
+            {
+                "time": "9:30 AM-11:00 AM",
+                "courseCode": "MTH210",
+                "courseName": "Discrete Structures",
+                "room": "C102",
+                "type": "Lecture"
+            },
+            {
+                "time": "1:00 PM-3:00 PM",
+                "courseCode": "MTH210",
+                "courseName": "Discrete Structures",
+                "room": [
+                    "C03",
+                    "C13",
+                    "C22",
+                    "C24",
+                    "C214",
+                    "C208",
+                    "C209",
+                    "C215",
+                    "C216"
+                ],
+                "type": "Tutorial"
+            },
+            {
+                "time": "3:00 PM-4:30 PM",
+                "courseCode": "CSE231",
+                "courseName": "Operating Systems",
+                "room": "C201",
+                "type": "Lecture",
+                "section": "A"
+            }
+        ],
+        "Tuesday": [
+            {
+                "time": "9:30 AM-11:00 AM",
+                "courseCode": "MTH240",
+                "courseName": "Real Analysis I",
+                "room": "C21",
+                "type": "Lecture"
+            },
+            {
+                "time": "11:00 AM-12:30 PM",
+                "courseCode": "ENT201",
+                "courseName": "Foundations of Entrepreneurship",
+                "room": "C212",
+                "type": "Lecture"
+            },
+            {
+                "time": "3:00 PM-4:30 PM",
+                "courseCode": "CSE201",
+                "courseName": "Advanced Programming",
+                "room": "B003",
+                "type": "Lecture"
+            }
+        ],
+        "Wednesday": [
+            {
+                "time": "8:00 AM-9:30 AM",
+                "courseCode": "CSE231",
+                "courseName": "Operating Systems",
+                "room": "C101",
+                "type": "Tutorial",
+                "section": "A"
+            },
+            {
+                "time": "9:30 AM-11:00 AM",
+                "courseCode": "MTH210",
+                "courseName": "Discrete Structures",
+                "room": "C102",
+                "type": "Lecture"
+            },
+            {
+                "time": "2:00 PM-3:00 PM",
+                "courseCode": "CSE201",
+                "courseName": "Advanced Programming",
+                "room": [
+                    "C03",
+                    "C22",
+                    "C208",
+                    "C209",
+                    "C214",
+                    "C215",
+                    "C216",
+                    "C210",
+                    "C211",
+                    "C212",
+                    "C213",
+                    "C02",
+                    "C12"
+                ],
+                "type": "Tutorial"
+            },
+            {
+                "time": "3:00 PM-4:30 PM",
+                "courseCode": "CSE231",
+                "courseName": "Operating Systems",
+                "room": "C201",
+                "type": "Lecture",
+                "section": "A"
+            }
+        ],
+        "Thursday": [
+            {
+                "time": "9:30 AM-11:00 AM",
+                "courseCode": "MTH240",
+                "courseName": "Real Analysis I",
+                "room": "C21",
+                "type": "Lecture"
+            },
+            {
+                "time": "2:00 PM-3:00 PM",
+                "courseCode": "MTH240",
+                "courseName": "Real Analysis I",
+                "room": [
+                    "C22",
+                    "C24",
+                    "C03",
+                    "C13"
+                ],
+                "type": "Tutorial"
+            },
+            {
+                "time": "3:00 PM-4:30 PM",
+                "courseCode": "CSE201",
+                "courseName": "Advanced Programming",
+                "room": "B003",
+                "type": "Lecture"
+            }
+        ],
+        "Friday": [
+            {
+                "time": "11:00 AM-12:30 PM",
+                "courseCode": "ENT201",
+                "courseName": "Foundations of Entrepreneurship",
+                "room": "C212",
+                "type": "Lecture"
+            }
+        ],
+        "Sunday": []
+    }
+}

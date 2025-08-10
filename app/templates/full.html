@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}Full Timetable{% endblock %}
+
+{% block content %}
+<div class="space-y-12 animate-fade-down">
+
+  <!-- Page Header -->
+  <div class="text-center space-y-2">
+    <h1 class="text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
+      📅 Full Timetable Overview
+    </h1>
+    <p class="text-sm text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+      Browse your entire timetable. Use the controls below to search or filter your classes.
+    </p>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex flex-wrap gap-3 justify-center mb-8">
+    <input id="searchInput" type="text"
+           placeholder="🔍 Search by code, name, room, instructor"
+           class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg 
+                  bg-white dark:bg-secondary text-sm w-72 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent transition">
+    <select id="typeFilter"
+            class="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg 
+                   bg-white dark:bg-secondary text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent transition">
+      <option value="">All Types</option>
+      <option value="lecture">Lecture</option>
+      <option value="lab">Lab</option>
+      <option value="tutorial">Tutorial</option>
+      <option value="other">Other</option>
+    </select>
+    <button type="button" onclick="openAll()" class="px-4 py-2 text-xs bg-green-100 text-green-800 rounded hover:bg-green-200 transition">Expand All</button>
+    <button type="button" onclick="closeAll()" class="px-4 py-2 text-xs bg-red-100 text-red-800 rounded hover:bg-red-200 transition">Collapse All</button>
+  </div>
+
+  {% if timetable %}
+    {% for day, classes in timetable.items() %}
+    <!-- Day Section -->
+    <section class="border border-border dark:border-soft rounded-xl shadow-lg overflow-hidden">
+
+      <!-- Collapsible Header -->
+      <button type="button"
+              class="w-full flex justify-between items-center bg-lightCard dark:bg-secondary px-4 py-3 
+                     cursor-pointer hover:bg-gray-100 dark:hover:bg-primary transition-colors duration-300"
+              onclick="toggleDay('{{ day }}')">
+        <span class="text-xl font-bold text-accent">{{ day }}</span>
+        <span class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+          {{ classes|length }} {{ 'class' if classes|length==1 else 'classes' }}
+          <svg id="chevron-{{ day }}" class="w-4 h-4 transition-transform duration-300"
+               fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </span>
+      </button>
+
+      <!-- Collapsible Body -->
+      <div id="day-{{ day }}" class="overflow-hidden transition-all duration-500 max-h-0 px-4 pb-4">
+        {% if classes %}
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-4">
+          {% for cls in classes %}
+          <div class="relative flex flex-col rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden card-item animate-fade-down"
+               style="animation-delay: {{ loop.index0 * 80 }}ms"
+               data-type="{{ cls.type|lower }}"
+               data-search="{{ (cls.courseCode ~ ' ' ~ cls.courseName ~ ' ' ~ (cls.instructor or '') ~ ' ' ~ (cls.room if cls.room is string else cls.room|join(' '))) | lower }}">
+
+            <!-- Left color bar -->
+            <div class="absolute left-0 top-0 h-full w-1.5 
+              {% if cls.type|lower == 'lab' %}bg-green-500{% elif cls.type|lower == 'lecture' %}bg-blue-500{% elif cls.type|lower == 'tutorial' %}bg-yellow-500{% else %}bg-gray-400{% endif %}"></div>
+
+            <!-- Card Content -->
+            <div class="p-5 flex flex-col flex-grow">
+              <!-- Header -->
+              <div class="mb-3">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+                  {{ cls.courseCode or 'N/A' }}
+                  <span class="text-gray-500 font-normal">– {{ cls.courseName or 'N/A' }}</span>
+                </h3>
+                {% if cls.section %}
+                <div class="mt-1 text-xs inline-block bg-accent/20 text-accent dark:bg-accent/40 dark:text-accent px-2 py-0.5 rounded">
+                  Sec {{ cls.section }}
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Details -->
+              <div class="text-sm text-gray-700 dark:text-gray-300 flex-grow space-y-1">
+                <div>⏰ <span class="font-medium">{{ cls.time or 'N/A' }}</span></div>
+                <div>🏫 
+                  {% if cls.room is string %}
+                    {{ cls.room }}
+                  {% elif cls.room %}
+                    {{ cls.room | join(', ') }}
+                  {% else %}N/A
+                  {% endif %}
+                </div>
+                <div>👨‍🏫 {{ cls.instructor or "TBA" }}</div>
+                {% if cls.notes %}
+                <div class="text-xs italic">🗒️ {{ cls.notes }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Footer meta -->
+              <div class="mt-4 flex items-center justify-between">
+                <span class="px-2 py-0.5 text-xs font-semibold rounded
+                  {% if cls.type|lower == 'lab' %}bg-green-100 text-green-700{% elif cls.type|lower == 'lecture' %}bg-blue-100 text-blue-700{% elif cls.type|lower == 'tutorial' %}bg-yellow-100 text-yellow-700{% else %}bg-gray-200 text-gray-700{% endif %}">
+                  {{ cls.type or 'Other' }}
+                </span>
+                <a href="{{ url_for('main.delete_course', day=day, index=loop.index0) }}"
+                   class="px-3 py-1.5 text-xs bg-red-100 text-red-800 rounded hover:bg-red-200 dark:bg-red-900 dark:text-red-100 dark:hover:bg-red-700 transition-colors duration-200"
+                   onclick="return confirm('Delete this class?');">
+                  🗑 Delete
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center text-xs italic text-gray-400 py-4">No classes for this day.</div>
+        {% endif %}
+      </div>
+    </section>
+    {% endfor %}
+  {% else %}
+    <p class="text-center text-gray-500 dark:text-gray-400 italic mt-10">
+      No timetable data available.
+    </p>
+  {% endif %}
+</div>
+
+<!-- Scripts -->
+<script>
+function toggleDay(day) {
+  const el = document.getElementById("day-" + day);
+  const chevron = document.getElementById("chevron-" + day);
+  if (el.classList.contains('open')) {
+    el.style.maxHeight = "0px";
+    el.classList.remove('open');
+    if (chevron) chevron.style.transform = "";
+  } else {
+    el.style.maxHeight = el.scrollHeight + "px";
+    el.classList.add('open');
+    if (chevron) chevron.style.transform = "rotate(180deg)";
+  }
+}
+function openAll() {
+  document.querySelectorAll("[id^='day-']").forEach(el => {
+    el.style.maxHeight = el.scrollHeight + "px";
+    el.classList.add('open');
+    const chev = document.getElementById("chevron-" + el.id.substring(4));
+    if (chev) chev.style.transform = "rotate(180deg)";
+  });
+}
+function closeAll() {
+  document.querySelectorAll("[id^='day-']").forEach(el => {
+    el.style.maxHeight = "0px";
+    el.classList.remove('open');
+    const chev = document.getElementById("chevron-" + el.id.substring(4));
+    if (chev) chev.style.transform = "";
+  });
+}
+document.getElementById('searchInput')?.addEventListener('input', filterClasses);
+document.getElementById('typeFilter')?.addEventListener('change', filterClasses);
+function filterClasses() {
+  const searchText = document.getElementById('searchInput').value.toLowerCase();
+  const typeFilter = document.getElementById('typeFilter').value;
+  document.querySelectorAll('.card-item').forEach(card => {
+    const matchesSearch = card.dataset.search.includes(searchText);
+    const matchesType = !typeFilter || card.dataset.type === typeFilter;
+    card.style.display = matchesSearch && matchesType ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

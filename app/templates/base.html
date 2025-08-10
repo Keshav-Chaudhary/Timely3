@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}TTView{% endblock %}</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Poppins', 'sans-serif'] },
+          colors: {
+            primary: '#0F172A',
+            secondary: '#1E293B',
+            accent: '#6366F1',
+            soft: '#94A3B8',
+            border: '#E2E8F0',
+            lightBg: '#F8FAFC',
+            lightCard: '#FFFFFF'
+          },
+          keyframes: {
+            'fade-down': { '0%': { opacity: '0', transform: 'translateY(-10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+            'slide-in': { '0%': { transform: 'translateY(-100%)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' }},
+            'slide-out': { '0%': { transform: 'translateY(0)', opacity: '1' }, '100%': { transform: 'translateY(-100%)', opacity: '0' }},
+            'fade': { '0%': {opacity: 0}, '100%': {opacity: 1} }
+          },
+          animation: {
+            'fade-down': 'fade-down 0.25s ease-out forwards',
+            'slide-in': 'slide-in 0.3s ease forwards',
+            'slide-out': 'slide-out 0.3s ease forwards',
+            'fade':'fade 0.5s ease'
+          }
+        },
+      },
+    };
+  </script>
+
+  <style>
+    .nav-active::after {
+      content: '';
+      display: block;
+      margin-top: 2px;
+      height: 3px;
+      background: currentColor;
+      border-radius: 9999px;
+      animation: underlineExpand 0.3s ease-out forwards;
+    }
+    @keyframes underlineExpand {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+    .main-blur { filter: blur(0.8px) grayscale(0.10)}
+    .modal-bg { background: rgba(0,0,0,0.28); }
+    .a11y-hide { position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden; }
+
+    /* Hamburger button lines */
+    .menu-btn div {
+      transition: all 0.3s ease;
+    }
+    .menu-btn.open div:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .menu-btn.open div:nth-child(2) {
+      opacity: 0;
+    }
+    .menu-btn.open div:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+  </style>
+</head>
+
+<body class="bg-lightBg dark:bg-primary text-gray-800 dark:text-soft transition-colors duration-500 min-h-screen flex flex-col font-sans animate-fade-down">
+
+  <!-- ACCESSIBLE TOAST/ALERT AREA -->
+  <div id="global-announcement" role="status" aria-live="polite" class="fixed top-20 left-1/2 z-[999] -translate-x-1/2 px-5 py-2 rounded-xl bg-soft/90 text-[15px] text-primary shadow-lg pointer-events-none select-none opacity-0 transition-all duration-300"></div>
+
+  <!-- NAVBAR -->
+  <nav id="navbar" class="backdrop-blur-md bg-lightCard/80 dark:bg-secondary/70 border-b border-border shadow-sm sticky top-0 z-50 transition-all duration-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+
+      <!-- Logo -->
+      <a href="{{ url_for('main.home') }}" class="text-2xl font-bold text-accent transition-transform duration-200 hover:scale-105">TTView</a>
+
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex gap-6 font-medium items-center">
+        <a href="{{ url_for('main.home') }}" class="{% if request.endpoint=='main.home' %}text-accent nav-active{% else %}hover:text-accent{% endif %} transition-colors duration-300">Today</a>
+        <a href="{{ url_for('main.view_timetable') }}" class="{% if request.endpoint=='main.view_timetable' %}text-accent nav-active{% else %}hover:text-accent{% endif %} transition-colors duration-300">Full</a>
+        <a href="{{ url_for('main.add_course') }}" class="{% if request.endpoint=='main.add_course' %}text-accent nav-active{% else %}hover:text-accent{% endif %} transition-colors duration-300">Add</a>
+      </div>
+
+      <!-- Right Controls -->
+      <div class="flex items-center gap-3 sm:gap-4">
+        <!-- Theme Toggle -->
+        <button id="themeToggle" aria-label="Toggle Theme" class="relative w-14 h-7 rounded-full bg-gray-200 dark:bg-secondary focus:outline-none ring-1 ring-gray-300 dark:ring-gray-700 transition-colors duration-500">
+          <div id="sliderIcon" class="absolute left-1 top-1 w-5 h-5 bg-white dark:bg-soft rounded-full flex items-center justify-center text-xs transition-transform duration-300">🌙</div>
+        </button>
+
+        <!-- Profile Dropdown -->
+        <div class="relative group">
+          <button aria-label="Account Menu" class="w-9 h-9 rounded-full ring-2 ring-accent/40 hover:ring-accent/70 transition focus:ring-accent/80 bg-gray-200 dark:bg-gray-800 flex items-center justify-center select-none text-gray-700 dark:text-gray-200 text-lg font-semibold">
+            👤
+          </button>
+          <div class="absolute right-0 mt-3 bg-lightCard dark:bg-secondary shadow-lg rounded-lg w-44 py-2 ring-1 ring-gray-200 dark:ring-gray-800 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all z-40">
+            <a href="#" tabindex="0" class="block px-5 py-2 hover:bg-accent/10 dark:hover:bg-accent/20">My Profile</a>
+            <a href="#" tabindex="0" class="block px-5 py-2 hover:bg-accent/10 dark:hover:bg-accent/20">Settings</a>
+            <a href="#" tabindex="0" class="block px-5 py-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900">Logout</a>
+          </div>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuButton" aria-label="Main Menu" aria-expanded="false" class="md:hidden p-2 rounded hover:bg-gray-100 dark:hover:bg-secondary transition-colors duration-300 menu-btn">
+          <div class="w-6 h-0.5 bg-current mb-1"></div>
+          <div class="w-6 h-0.5 bg-current mb-1"></div>
+          <div class="w-6 h-0.5 bg-current"></div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu Backdrop -->
+    <div id="mobileMenuBackdrop" class="fixed inset-0 z-40 bg-black/40 hidden opacity-0 transition-opacity duration-300"></div>
+
+    <!-- Mobile Menu -->
+    <aside id="mobileMenu" class="fixed top-0 left-0 w-full h-screen bg-lightCard dark:bg-secondary z-50 transform -translate-y-full opacity-0 transition-all duration-500 md:hidden flex flex-col">
+      <div class="flex flex-col text-lg items-center justify-center mt-36 gap-2">
+        <a href="{{ url_for('main.home') }}" class="block px-8 py-3 w-56 text-center rounded hover:bg-gray-100 dark:hover:bg-primary transition-colors duration-300">Today</a>
+        <a href="{{ url_for('main.view_timetable') }}" class="block px-8 py-3 w-56 text-center rounded hover:bg-gray-100 dark:hover:bg-primary transition-colors duration-300">Full</a>
+        <a href="{{ url_for('main.add_course') }}" class="block px-8 py-3 w-56 text-center rounded hover:bg-gray-100 dark:hover:bg-primary transition-colors duration-300">Add</a>
+      </div>
+    </aside>
+  </nav>
+
+  <!-- CONTENT -->
+  <main id="mainBody" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 py-6 w-full transition-opacity duration-500">
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% if msgs %}
+        <div class="space-y-2 mb-4" aria-live="polite">
+          {% for cat, msg in msgs %}
+            <div class="p-3 rounded shadow-sm {{ 'bg-green-100 text-green-800' if cat=='success' else 'bg-red-100 text-red-800' }}">
+              {{ msg }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="backdrop-blur-md bg-lightCard/80 dark:bg-secondary/70 border-t border-border mt-12 transition-colors duration-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex justify-between text-xs text-soft">
+      <span>&copy; <span id="year"></span> TTView</span>
+      <span class="text-accent font-medium">Made with ❤️</span>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Theme auto-detect and toggle
+    (function() {
+      const themeInStorage = localStorage.getItem("theme");
+      if(!themeInStorage) {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.classList.toggle("dark", prefersDark);
+        document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
+        localStorage.setItem("theme", prefersDark ? "dark" : "light");
+      }
+    })();
+
+    const root = document.documentElement;
+    const toggle = document.getElementById("themeToggle");
+    const icon = document.getElementById("sliderIcon");
+
+    function setIcon(isDark) {
+      icon.textContent = isDark ? "🌙" : "☀️";
+      icon.style.transform = isDark ? "translateX(28px)" : "translateX(0)";
+    }
+    function applyTheme(isDark, instant=false) {
+      root.classList.toggle("dark", isDark);
+      root.setAttribute("data-theme", isDark ? "dark" : "light");
+      if (instant) {
+        icon.style.transition = "none";
+        setIcon(isDark);
+        setTimeout(() => icon.style.transition = "", 50);
+      } else setIcon(isDark);
+    }
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      applyTheme(savedTheme === "dark", true);
+    });
+    toggle.addEventListener("click", () => {
+      const isDark = !root.classList.contains("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+      applyTheme(isDark);
+    });
+
+    // Mobile Menu handling
+    const mobileMenuBtn = document.getElementById("mobileMenuButton");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const mobileMenuBackdrop = document.getElementById("mobileMenuBackdrop");
+
+    function openMenu() {
+      mobileMenu.classList.remove("-translate-y-full", "opacity-0");
+      mobileMenu.classList.add("translate-y-0", "opacity-100");
+      mobileMenuBackdrop.classList.remove("hidden");
+      setTimeout(() => mobileMenuBackdrop.classList.add("opacity-100"), 10);
+      mobileMenuBtn.classList.add("open");
+      mobileMenuBtn.setAttribute("aria-expanded", "true");
+      document.body.style.overflow = "hidden";
+    }
+    function closeMenu() {
+      mobileMenu.classList.remove("translate-y-0", "opacity-100");
+      mobileMenu.classList.add("-translate-y-full", "opacity-0");
+      mobileMenuBackdrop.classList.remove("opacity-100");
+      setTimeout(() => mobileMenuBackdrop.classList.add("hidden"), 300);
+      mobileMenuBtn.classList.remove("open");
+      mobileMenuBtn.setAttribute("aria-expanded", "false");
+      document.body.style.overflow = "";
+    }
+
+    mobileMenuBtn.addEventListener("click", () => {
+      if (mobileMenuBtn.classList.contains("open")) closeMenu();
+      else openMenu();
+    });
+    mobileMenuBackdrop.addEventListener("click", closeMenu);
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && mobileMenuBtn.classList.contains("open")) closeMenu();
+    });
+  </script>
+</body>
+</html>
