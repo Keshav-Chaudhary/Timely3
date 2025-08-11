@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% block title %}TTView{% endblock %}</title>
+  <title>{% block title %}Timely 2{% endblock %}</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -86,7 +85,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
 
       <!-- Logo -->
-      <a href="{{ url_for('main.home') }}" class="text-2xl font-bold text-accent transition-transform duration-200 hover:scale-105">TTView</a>
+      <a href="{{ url_for('main.home') }}" class="text-2xl font-bold text-accent transition-transform duration-200 hover:scale-105">Timely 2</a>
 
       <!-- Desktop Menu -->
       <div class="hidden md:flex gap-6 font-medium items-center">
@@ -153,12 +152,34 @@
   </main>
 
   <!-- FOOTER -->
-  <footer class="backdrop-blur-md bg-lightCard/80 dark:bg-secondary/70 border-t border-border mt-12 transition-colors duration-500">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex justify-between text-xs text-soft">
-      <span>&copy; <span id="year"></span> TTView</span>
+<footer class="backdrop-blur-md bg-lightCard/80 dark:bg-secondary/70 border-t border-border mt-12 transition-colors duration-500">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex justify-between text-xs text-soft">
+    <span>&copy; <span id="year"></span> TTView</span>
+    
+    <div class="flex items-center space-x-4">
+      <a href="https://github.com/keshav-Chaudhary" target="_blank" rel="noopener noreferrer" 
+         class="hover:underline flex items-center space-x-1">
+        <!-- Optional GitHub icon (SVG) -->
+        <!-- GitHub Icon SVG -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 0.296C5.373 0.296 0 5.669 0 12.296c0 5.292 3.438 9.771 8.205 11.365.6.111.82-.26.82-.577 
+            0-.285-.011-1.04-.017-2.04-3.338.726-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756
+            -1.089-.745.083-.73.083-.73 1.205.085 1.838 1.237 1.838 1.237 1.07 1.834 2.807 1.303 3.492.997
+            .107-.775.418-1.303.762-1.603-2.665-.304-5.466-1.333-5.466-5.931 
+            0-1.311.469-2.383 1.236-3.223-.124-.303-.536-1.524.117-3.176 0 0 
+            1.008-.322 3.301 1.23a11.48 11.48 0 0 1 3.003-.403c1.018.005 2.043.138 3.003.403 
+            2.291-1.552 3.297-1.23 3.297-1.23.655 1.652.243 2.873.119 3.176.77.84 
+            1.235 1.912 1.235 3.223 0 4.61-2.805 5.623-5.476 5.921.43.371.823 1.102.823 2.222 
+            0 1.604-.014 2.896-.014 3.289 0 .32.217.694.825.576C20.565 22.064 
+            24 17.586 24 12.296 24 5.669 18.627 0.296 12 0.296z"/>
+        </svg>
+        <span>GitHub</span>
+      </a>
+
       <span class="text-accent font-medium">Made with ❤️</span>
     </div>
-  </footer>
+  </div>
+</footer>
 
   <!-- Scripts -->
   <script>
