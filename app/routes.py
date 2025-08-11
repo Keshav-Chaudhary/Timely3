@@ -1,17 +1,23 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, Response
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import csv
 import io
 
 main_bp = Blueprint('main', __name__)
 
+# Define your timezone once
+INDIA_TZ = ZoneInfo("Asia/Kolkata")
+
 def parse_time_range(time_range):
-    """Convert 'h:mm AM/PM-h:mm AM/PM' to (start_datetime, end_datetime) today."""
+    """Convert 'h:mm AM/PM-h:mm AM/PM' to (start_datetime, end_datetime) today with timezone."""
     try:
         start_str, end_str = [t.strip() for t in time_range.split('-')]
-        today = datetime.now().date()
-        start_dt = datetime.strptime(start_str, "%I:%M %p").replace(year=today.year, month=today.month, day=today.day)
-        end_dt = datetime.strptime(end_str, "%I:%M %p").replace(year=today.year, month=today.month, day=today.day)
+        now = datetime.now(INDIA_TZ)
+        start_dt = datetime.strptime(start_str, "%I:%M %p").replace(
+            year=now.year, month=now.month, day=now.day, tzinfo=INDIA_TZ)
+        end_dt = datetime.strptime(end_str, "%I:%M %p").replace(
+            year=now.year, month=now.month, day=now.day, tzinfo=INDIA_TZ)
         return start_dt, end_dt
     except Exception:
         return None, None
@@ -19,8 +25,9 @@ def parse_time_range(time_range):
 @main_bp.route("/")
 def home():
     data = current_app.load_timetable()
-    today = datetime.now().strftime("%A")
-    now = datetime.now()
+    now = datetime.now(INDIA_TZ)
+    today = now.strftime("%A")
+
     today_classes = data.get("timetable", {}).get(today, [])
 
     for cls in today_classes:
@@ -57,8 +64,8 @@ def home():
 def view_timetable():
     data = current_app.load_timetable()
     timetable = data.get("timetable", {})
-    current_day = datetime.now().strftime("%A")
-    now = datetime.now()
+    now = datetime.now(INDIA_TZ)
+    current_day = now.strftime("%A")
 
     for class_list in timetable.values():
         for cls in class_list:
@@ -82,6 +89,7 @@ def view_timetable():
         current_day=current_day,
         current_year=now.year
     )
+
 @main_bp.route("/add_course", methods=['GET', 'POST'])
 def add_course():
     if request.method == 'POST':
@@ -119,7 +127,6 @@ def delete_course(day, index):
         flash("Could not delete course. Invalid index or day.", "error")
     return redirect(url_for("main.view_timetable"))
 
-# ADVANCED: Export as CSV
 @main_bp.route("/export_csv")
 def export_csv():
     data = current_app.load_timetable()
@@ -145,7 +152,6 @@ def export_csv():
     return Response(output.getvalue(), mimetype="text/csv",
                     headers={"Content-Disposition": "attachment; filename=timetable.csv"})
 
-# ADVANCED: Export as PDF Stub (implement with your chosen PDF library)
 @main_bp.route("/export_pdf")
 def export_pdf():
     flash("PDF export not implemented in this sample.", "error")
